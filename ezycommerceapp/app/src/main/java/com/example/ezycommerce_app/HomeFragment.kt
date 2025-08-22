@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class HomeFragment : Fragment() {
@@ -24,23 +23,45 @@ class HomeFragment : Fragment() {
         recyclerView = view.findViewById(R.id.productRecyclerView)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        // Dummy products (later you can load from API/database)
-        productList = listOf(
-            Product("Shoes", 199.0, "Comfortable running shoes", R.drawable.shoes),
-            Product("Watch", 99.0, "Stylish wrist watch", R.drawable.watch),
-            Product("T-Shirt", 49.0, "Durable travel bag", R.drawable.tshirt)
+        // ✅ Dummy products (later you can load from API/database)
+        val allProducts = listOf(
+            Product("Shoes", 199.0, "Comfortable running shoes", R.drawable.shoes, "Clothing"),
+            Product("Watch", 99.0, "Stylish wrist watch", R.drawable.watch, "Accessories"),
+            Product("T-Shirt", 49.0, "Casual cotton t-shirt", R.drawable.tshirt, "Clothing"),
+            Product("Laptop", 1200.0, "Gaming laptop", R.drawable.laptop, "Electronics"),
+            Product("Apple", 2.0, "Fresh apple", R.drawable.watch, "Grocery")
         )
 
-        // ✅ HERE you put your adapter with click handling
+        // ✅ Check if category was passed
+        val selectedCategory = arguments?.getString("category")
+
+        productList = if (!selectedCategory.isNullOrEmpty()) {
+            allProducts.filter { it.category == selectedCategory }
+        } else {
+            allProducts
+        }
+
+        // ✅ Set adapter with click handling
         productAdapter = ProductAdapter(productList) { clickedProduct ->
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, ProductDetailsFragment.newInstance(clickedProduct))
-                .addToBackStack(null) // so back button works
+                .addToBackStack(null)
                 .commit()
         }
 
         recyclerView.adapter = productAdapter
 
         return view
+    }
+
+    companion object {
+        fun newInstance(selectedCategory: String?): HomeFragment {
+            val fragment = HomeFragment()
+            val args = Bundle().apply {
+                putString("category", selectedCategory)
+            }
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

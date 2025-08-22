@@ -4,5 +4,7 @@ data class Product(
     val name: String,
     val price: Double,
     val description: String,
-    val imageResId: Int // image from drawable
+    val imageResId: Int,
+    val category: String   // ✅ New field
 )
+

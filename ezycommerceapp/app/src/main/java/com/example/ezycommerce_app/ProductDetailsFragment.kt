@@ -19,7 +19,8 @@ class ProductDetailsFragment : Fragment() {
                 putString("product_name", product.name)
                 putDouble("product_price", product.price)
                 putString("product_description", product.description)
-                putInt("product_image", product.imageResId) // ✅ image from drawable
+                putInt("product_image", product.imageResId)
+                putString("product_category", product.category) // ✅ add category
             }
             fragment.arguments = bundle
             return fragment
@@ -46,7 +47,22 @@ class ProductDetailsFragment : Fragment() {
         }
 
         addButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Added to cart!", Toast.LENGTH_SHORT).show()
+            arguments?.let { bundle ->
+                // ✅ Recreate the Product object with category restored
+                val product = Product(
+                    name = bundle.getString("product_name") ?: "",
+                    price = bundle.getDouble("product_price"),
+                    description = bundle.getString("product_description") ?: "",
+                    imageResId = bundle.getInt("product_image"),
+                    category = bundle.getString("product_category") ?: "" // ✅ fixed
+                )
+
+                // Add to cart
+                CartManager.addToCart(product)
+                Toast.makeText(requireContext(), "${product.name} added to cart!", Toast.LENGTH_SHORT).show()
+                // Update cart badge
+                (requireActivity() as MainActivity).updateCartBadge(CartManager.getCartCount())
+            }
         }
 
         return view
