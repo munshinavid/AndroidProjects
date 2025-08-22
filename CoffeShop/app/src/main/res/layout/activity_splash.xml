@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/creamWhite"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/ic_launcher_foreground"
+        android:contentDescription="Logo" />
+
+    <TextView
+        style="@style/HeadingText"
+        android:layout_marginTop="20dp"
+        android:text="Fresh Brew Every Morning" />
+
+    <Button
+        android:id="@+id/btnExploreMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="Explore Menu"
+        android:backgroundTint="@color/coffeeBrown"
+        android:textColor="@color/white"/>
+</LinearLayout>

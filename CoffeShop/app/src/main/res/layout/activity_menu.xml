@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <!-- Search Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@color/purple_500">
+
+        <EditText
+            android:id="@+id/searchInput"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_bg"
+            android:hint="Search products..."
+            android:padding="8dp"
+            android:text="Laptop, Phone..." />
+
+        <ImageView
+            android:id="@+id/cartIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_cart"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <!-- Categories Horizontal Scroll -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:id="@+id/categoriesContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+
+            <!-- Dummy categories -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/category_bg"
+                android:padding="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Electronics"
+                android:textColor="#000"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/category_bg"
+                android:padding="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Fashion"
+                android:textColor="#000"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/category_bg"
+                android:padding="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Home"
+                android:textColor="#000"/>
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Product Grid with Dummy Items -->
+    <GridView
+        android:id="@+id/productGrid"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:columnWidth="180dp"
+        android:gravity="center"
+        android:horizontalSpacing="8dp"
+        android:numColumns="2"
+        android:padding="8dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="8dp"
+        android:background="#EEEEEE"/>
+
+    <!-- Dummy product cards (only for visualization, remove later) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="#FFFFFF">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="@drawable/product_bg">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_launcher_foreground"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Product 1"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:paddingTop="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$299"
+                android:textColor="@color/purple_500"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="@drawable/product_bg">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_launcher_foreground"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Product 2"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:paddingTop="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$499"
+                android:textColor="@color/purple_500"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

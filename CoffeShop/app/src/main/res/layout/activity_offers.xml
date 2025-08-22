@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/creamWhite"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <include layout="@layout/toolbar_layout" />
+
+    <TextView
+        style="@style/HeadingText"
+        android:text="Special Offers" />
+
+    <TextView
+        style="@style/BodyText"
+        android:layout_marginTop="10dp"
+        android:text="☕ Buy 1 Get 1 Free every Friday" />
+
+    <TextView
+        style="@style/BodyText"
+        android:layout_marginTop="5dp"
+        android:text="☕ 20% off on orders above $20" />
+</LinearLayout>
