@@ -42,6 +42,8 @@ class CartFragment : Fragment() {
                 CartManager.clearCart()
                 cartAdapter.notifyDataSetChanged()
                 updateTotal()
+                // Update cart badge
+                (requireActivity() as MainActivity).updateCartBadge(CartManager.getCartCount())
                 Toast.makeText(requireContext(), "Order placed successfully!", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(requireContext(), "Cart is empty!", Toast.LENGTH_SHORT).show()
