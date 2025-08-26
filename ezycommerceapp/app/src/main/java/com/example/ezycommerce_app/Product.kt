@@ -5,6 +5,8 @@ data class Product(
     val price: Double,
     val description: String,
     val imageResId: Int,
-    val category: String   // ✅ New field
+    val category: String,
+    var quantity: Int = 1 // default quantity is 1
 )
+
 

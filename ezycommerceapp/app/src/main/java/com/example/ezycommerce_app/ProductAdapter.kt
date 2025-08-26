@@ -26,8 +26,16 @@ class ProductAdapter(
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = productList[position]
-        holder.name.text = product.name
-        holder.price.text = "$${product.price}"
+        holder.name.text = if (product.quantity > 1) {
+            // Show name with quantity if more than 1
+            "${product.name} (x${product.quantity})"
+        } else {
+            product.name
+        }
+
+        // Show price multiplied by quantity
+        holder.price.text = "$${String.format("%.2f", product.price * product.quantity)}"
+
         holder.image.setImageResource(product.imageResId)
 
         holder.itemView.setOnClickListener {
@@ -37,3 +45,4 @@ class ProductAdapter(
 
     override fun getItemCount(): Int = productList.size
 }
+

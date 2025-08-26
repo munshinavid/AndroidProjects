@@ -54,7 +54,8 @@ class CartFragment : Fragment() {
     }
 
     private fun updateTotal() {
-        val total = CartManager.cartItems.sumOf { it.price }
+        val total = CartManager.getTotal()
         totalTextView.text = "Total: $${String.format("%.2f", total)}"
     }
+
 }
