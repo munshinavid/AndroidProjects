@@ -6,6 +6,13 @@
     android:gravity="center"
     android:padding="20dp">
 
+    <ImageView
+        android:layout_width="224dp"
+        android:layout_height="197dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_login_logo"
+        android:layout_margin="30dp"/>
+
     <EditText
         android:id="@+id/usernameInput"
         android:layout_width="match_parent"
