@@ -8,10 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class TodoAdapter(
-    private var todos: MutableList<Todo> // changed to MutableList so we can remove
+    private var todos: MutableList<Todo>
 ) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
 
-    inner class TodoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class TodoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
+        val cbDone: CheckBox = itemView.findViewById(R.id.cbDone)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_todo, parent, false)
@@ -21,26 +24,27 @@ class TodoAdapter(
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         val currentTodo = todos[position]
 
-        holder.itemView.apply {
-            val tvTitle = findViewById<TextView>(R.id.tvTitle)
-            val cbDone = findViewById<CheckBox>(R.id.cbDone)
+        // Bind text and checkbox state
+        holder.tvTitle.text = currentTodo.title
+        holder.cbDone.isChecked = currentTodo.isChecked
 
-            tvTitle.text = currentTodo.title
-            cbDone.isChecked = currentTodo.isChecked
+        // ⚠️ First, clear any old listener to avoid multiple triggers
+        holder.cbDone.setOnCheckedChangeListener(null)
 
-            // ✅ When checkbox is clicked
-            cbDone.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    // remove this item from list
-                    todos.removeAt(position)
-                    notifyItemRemoved(position)
-                    notifyItemRangeChanged(position, todos.size)
+        // ✅ Then attach new listener
+        holder.cbDone.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Update state
+                currentTodo.isChecked = true
+                // Remove safely
+                val pos = holder.adapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    todos.removeAt(pos)
+                    notifyItemRemoved(pos)
                 }
             }
         }
     }
 
-    override fun getItemCount(): Int {
-        return todos.size
-    }
+    override fun getItemCount(): Int = todos.size
 }
