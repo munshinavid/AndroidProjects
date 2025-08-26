@@ -8,8 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class TodoAdapter(
-    var todos: List<Todo>
-): RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
+    private var todos: MutableList<Todo> // changed to MutableList so we can remove
+) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
+
     inner class TodoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
@@ -18,18 +19,28 @@ class TodoAdapter(
     }
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
+        val currentTodo = todos[position]
+
         holder.itemView.apply {
-            var tvTitle = findViewById<TextView>(R.id.tvTitle)
-            var cbDone = findViewById<CheckBox>(R.id.cbDone)
-            tvTitle.text = todos[position].title
-            cbDone.isChecked = todos[position].isChecked
+            val tvTitle = findViewById<TextView>(R.id.tvTitle)
+            val cbDone = findViewById<CheckBox>(R.id.cbDone)
+
+            tvTitle.text = currentTodo.title
+            cbDone.isChecked = currentTodo.isChecked
+
+            // ✅ When checkbox is clicked
+            cbDone.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    // remove this item from list
+                    todos.removeAt(position)
+                    notifyItemRemoved(position)
+                    notifyItemRangeChanged(position, todos.size)
+                }
+            }
         }
     }
 
     override fun getItemCount(): Int {
         return todos.size
     }
-
-
-
 }
