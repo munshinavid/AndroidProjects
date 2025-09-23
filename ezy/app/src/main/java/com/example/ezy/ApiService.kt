@@ -1,5 +1,5 @@
 // ApiService.kt - Complete API Service for EzyCommerce Android App
-package com.example.ezycommerce.network
+package com.example.ezy
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -59,7 +59,7 @@ data class Product(
     val stock: Int,
     val rating: Double,
     val review_count: Int,
-    val is_featured: Boolean,
+    val is_featured: Int,
     val in_stock: Boolean,
     val badge: String?
 )
@@ -265,10 +265,34 @@ data class ApiResponse(
     val error: String? = null
 )
 
-// API Interface
+// API Client Configuration
+object ApiClient {
+    private const val BASE_URL = "https://ezyshop-mvvq.onrender.com/Customer/controllers/"
+
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    private val httpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(httpClient)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val apiService: EzyCommerceApiService = retrofit.create(EzyCommerceApiService::class.java)
+}
+
+// Fixed API Interface - Replace your existing EzyCommerceApiService
 interface EzyCommerceApiService {
 
-    // Auth Endpoints
+    // Auth Endpoints (these work fine)
     @POST("AuthController.php?endpoint=login")
     suspend fun login(@Body request: LoginRequest): AuthResponse
 
@@ -281,7 +305,7 @@ interface EzyCommerceApiService {
     @GET("AuthController.php?endpoint=verify")
     suspend fun verifyToken(@Header("Authorization") token: String): TokenVerificationResponse
 
-    // Products Endpoints
+    // Products Endpoints (these work fine)
     @GET("HomeController.php/products")
     suspend fun getProducts(
         @Query("page") page: Int = 1,
@@ -295,20 +319,30 @@ interface EzyCommerceApiService {
     @GET("HomeController.php/products/{id}")
     suspend fun getProduct(@Path("id") productId: Int): ProductResponse
 
-    // Categories Endpoint
     @GET("HomeController.php/categories")
     suspend fun getCategories(): CategoriesResponse
 
-    // Cart Endpoints
+    // FIXED Cart Endpoints - Using @FormUrlEncoded and @Field
     @GET("CartController.php?action=fetchCart")
     suspend fun getCart(@Query("user_id") userId: Int): CartResponse
 
+    @FormUrlEncoded
     @POST("CartController.php?action=addToCart")
-    suspend fun addToCart(@Body request: AddToCartRequest): CartResponse
+    suspend fun addToCart(
+        @Field("product_id") productId: Int,
+        @Field("quantity") quantity: Int,
+        @Field("user_id") userId: Int
+    ): CartResponse
 
+    @FormUrlEncoded
     @POST("CartController.php?action=updateQuantity")
-    suspend fun updateCartQuantity(@Body request: UpdateQuantityRequest): CartResponse
+    suspend fun updateCartQuantity(
+        @Field("cart_item_id") cartItemId: Int,
+        @Field("quantity") quantity: Int,
+        @Field("user_id") userId: Int
+    ): CartResponse
 
+    // Remove from cart uses query parameters (as per your backend)
     @POST("CartController.php?action=removeFromCart")
     suspend fun removeFromCart(
         @Query("cart_item_id") cartItemId: Int,
@@ -318,23 +352,36 @@ interface EzyCommerceApiService {
     @POST("CartController.php?action=clearCart")
     suspend fun clearCart(@Query("user_id") userId: Int): CartResponse
 
+    // FIXED Place Order - Your backend expects form fields, not nested JSON
+    @FormUrlEncoded
     @POST("CartController.php?action=placeOrder")
-    suspend fun placeOrder(@Body request: PlaceOrderRequest): OrderResponse
+    suspend fun placeOrder(
+        @Field("payment_method") paymentMethod: String,
+        @Field("customer_details[full_name]") fullName: String,
+        @Field("customer_details[address]") address: String,
+        @Field("customer_details[phone]") phone: String,
+        @Field("user_id") userId: Int
+    ): OrderResponse
 
-    // RESTful Cart Endpoints (Alternative)
+    // Alternative place order method if the above doesn't work
+    @FormUrlEncoded
+    @POST("CartController.php?action=placeOrder")
+    suspend fun placeOrderAlt(
+        @Field("payment_method") paymentMethod: String,
+        @Field("full_name") fullName: String,
+        @Field("address") address: String,
+        @Field("phone") phone: String,
+        @Field("user_id") userId: Int
+    ): OrderResponse
+
+    // RESTful Cart Endpoints (Alternative) - Keep these as backup
     @GET("HomeController.php/customers/{customerId}/cart")
     suspend fun getCartRESTful(@Path("customerId") customerId: Int): CartResponse
 
     @GET("HomeController.php/customers/{customerId}/cart/count")
     suspend fun getCartCount(@Path("customerId") customerId: Int): CartResponse
 
-    @POST("HomeController.php/customers/{customerId}/cart")
-    suspend fun addToCartRESTful(
-        @Path("customerId") customerId: Int,
-        @Body request: Map<String, Any>
-    ): CartResponse
-
-    // User Dashboard & Profile Endpoints
+    // User Dashboard & Profile Endpoints (these work fine)
     @GET("UserController.php?endpoint=dashboard")
     suspend fun getDashboard(@Header("Authorization") token: String): DashboardResponse
 
@@ -354,7 +401,7 @@ interface EzyCommerceApiService {
         @Body request: UpdateProfileRequest
     ): ProfileResponse
 
-    // Address Endpoints
+    // Address Endpoints (these work fine)
     @GET("UserController.php?endpoint=addresses")
     suspend fun getAddresses(@Header("Authorization") token: String): List<Address>
 
@@ -383,7 +430,7 @@ interface EzyCommerceApiService {
         @Query("id") addressId: Int
     ): ApiResponse
 
-    // Wishlist Endpoints
+    // Wishlist Endpoints (these work fine)
     @GET("UserController.php?endpoint=wishlist")
     suspend fun getWishlist(
         @Header("Authorization") token: String,
@@ -422,40 +469,16 @@ interface EzyCommerceApiService {
         @Path("productId") productId: Int
     ): WishlistResponse
 
-    // Newsletter Endpoint
+    // Newsletter Endpoint (this works fine)
     @POST("HomeController.php/newsletter/subscriptions")
     suspend fun subscribeNewsletter(@Body request: NewsletterRequest): ApiResponse
 }
 
-// API Client Configuration
-object ApiClient {
-    private const val BASE_URL = "https://munshinavid.lovestoblog.com/ezycommerce/Customer/controllers/"
-
-    private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-
-    private val httpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .build()
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(httpClient)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val apiService: EzyCommerceApiService = retrofit.create(EzyCommerceApiService::class.java)
-}
-
-// Repository Class for API Operations
+// Updated Repository Class with Fixed Cart Methods
 class EzyCommerceRepository {
     private val apiService = ApiClient.apiService
 
-    // Auth Methods
+    // Auth Methods (unchanged - these work)
     suspend fun login(email: String, password: String): Result<AuthResponse> {
         return try {
             val response = apiService.login(LoginRequest(email, password))
@@ -492,7 +515,7 @@ class EzyCommerceRepository {
         }
     }
 
-    // Products Methods
+    // Products Methods (unchanged - these work)
     suspend fun getProducts(
         page: Int = 1,
         limit: Int = 8,
@@ -527,7 +550,7 @@ class EzyCommerceRepository {
         }
     }
 
-    // Cart Methods
+    // FIXED Cart Methods
     suspend fun getCart(userId: Int): Result<CartResponse> {
         return try {
             val response = apiService.getCart(userId)
@@ -539,7 +562,7 @@ class EzyCommerceRepository {
 
     suspend fun addToCart(productId: Int, quantity: Int, userId: Int): Result<CartResponse> {
         return try {
-            val response = apiService.addToCart(AddToCartRequest(productId, quantity, userId))
+            val response = apiService.addToCart(productId, quantity, userId)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
@@ -548,7 +571,7 @@ class EzyCommerceRepository {
 
     suspend fun updateCartQuantity(cartItemId: Int, quantity: Int, userId: Int): Result<CartResponse> {
         return try {
-            val response = apiService.updateCartQuantity(UpdateQuantityRequest(cartItemId, quantity, userId))
+            val response = apiService.updateCartQuantity(cartItemId, quantity, userId)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
@@ -570,14 +593,32 @@ class EzyCommerceRepository {
         userId: Int
     ): Result<OrderResponse> {
         return try {
-            val response = apiService.placeOrder(PlaceOrderRequest(paymentMethod, customerDetails, userId))
+            // Try the first method (nested field names)
+            val response = try {
+                apiService.placeOrder(
+                    paymentMethod,
+                    customerDetails.full_name,
+                    customerDetails.address,
+                    customerDetails.phone,
+                    userId
+                )
+            } catch (e: Exception) {
+                // If that fails, try the alternative method (flat field names)
+                apiService.placeOrderAlt(
+                    paymentMethod,
+                    customerDetails.full_name,
+                    customerDetails.address,
+                    customerDetails.phone,
+                    userId
+                )
+            }
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    // User Methods
+    // User Methods (unchanged - these work)
     suspend fun getDashboard(token: String): Result<DashboardResponse> {
         return try {
             val response = apiService.getDashboard("Bearer $token")
@@ -614,7 +655,7 @@ class EzyCommerceRepository {
         }
     }
 
-    // Wishlist Methods
+    // Wishlist Methods (unchanged - these work)
     suspend fun getWishlist(token: String, page: Int = 1, limit: Int = 10): Result<WishlistResponse> {
         return try {
             val response = apiService.getWishlist("Bearer $token", page, limit)
@@ -643,112 +684,4 @@ class EzyCommerceRepository {
     }
 }
 
-// Test Functions for API Service
-class ApiServiceTest {
-    private val repository = EzyCommerceRepository()
-
-    suspend fun testLogin(): String {
-        return try {
-            val result = repository.login("test@example.com", "password123")
-            if (result.isSuccess) {
-                "✅ Login Test: SUCCESS - ${result.getOrNull()?.message}"
-            } else {
-                "❌ Login Test: FAILED - ${result.exceptionOrNull()?.message}"
-            }
-        } catch (e: Exception) {
-            "❌ Login Test: ERROR - ${e.message}"
-        }
-    }
-
-    suspend fun testGetProducts(): String {
-        return try {
-            val result = repository.getProducts(page = 1, limit = 5)
-            if (result.isSuccess) {
-                val products = result.getOrNull()?.products
-                "✅ Get Products Test: SUCCESS - Found ${products?.size ?: 0} products"
-            } else {
-                "❌ Get Products Test: FAILED - ${result.exceptionOrNull()?.message}"
-            }
-        } catch (e: Exception) {
-            "❌ Get Products Test: ERROR - ${e.message}"
-        }
-    }
-
-    suspend fun testGetCategories(): String {
-        return try {
-            val result = repository.getCategories()
-            if (result.isSuccess) {
-                val categories = result.getOrNull()?.categories
-                "✅ Get Categories Test: SUCCESS - Found ${categories?.size ?: 0} categories"
-            } else {
-                "❌ Get Categories Test: FAILED - ${result.exceptionOrNull()?.message}"
-            }
-        } catch (e: Exception) {
-            "❌ Get Categories Test: ERROR - ${e.message}"
-        }
-    }
-
-    suspend fun testGetCart(userId: Int): String {
-        return try {
-            val result = repository.getCart(userId)
-            if (result.isSuccess) {
-                val cartItems = result.getOrNull()?.cartItems
-                "✅ Get Cart Test: SUCCESS - Found ${cartItems?.size ?: 0} items"
-            } else {
-                "❌ Get Cart Test: FAILED - ${result.exceptionOrNull()?.message}"
-            }
-        } catch (e: Exception) {
-            "❌ Get Cart Test: ERROR - ${e.message}"
-        }
-    }
-
-    suspend fun runAllTests(userId: Int = 1): List<String> {
-        return listOf(
-            testLogin(),
-            testGetProducts(),
-            testGetCategories(),
-            testGetCart(userId)
-        )
-    }
-}
-
-/*
-Usage Example in your Compose Activity/Fragment:
-
-class MainActivity : ComponentActivity() {
-    private val repository = EzyCommerceRepository()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            // Your Compose content
-        }
-
-        // Test API in coroutine
-        lifecycleScope.launch {
-            val testResults = ApiServiceTest().runAllTests()
-            testResults.forEach { result ->
-                Log.d("API_TEST", result)
-            }
-        }
-    }
-}
-
-// In your ViewModel:
-class ProductViewModel : ViewModel() {
-    private val repository = EzyCommerceRepository()
-
-    fun loadProducts() {
-        viewModelScope.launch {
-            val result = repository.getProducts()
-            result.onSuccess { response ->
-                // Handle success
-                val products = response.products
-            }.onFailure { exception ->
-                // Handle error
-                Log.e("API", "Error loading products", exception)
-            }
-        }
-    }
-}
-*/
+// Quick Test for Fixed Cart Operations

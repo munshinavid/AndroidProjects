@@ -74,6 +74,7 @@ dependencies {
 
     // DataStore for preferences
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation(libs.firebase.appdistribution.gradle)
 
     // Dependency injection (if needed)
     // implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
