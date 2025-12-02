@@ -3,7 +3,6 @@ package com.example.ezy.screens
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -21,8 +20,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.ezy.*
+import com.example.ezy.R
 import com.example.ezy.viewmodels.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +63,11 @@ fun HomeScreen(navController: NavController) {
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
             // Search Bar
             OutlinedTextField(
                 value = searchQuery,
@@ -72,7 +77,9 @@ fun HomeScreen(navController: NavController) {
                 },
                 placeholder = { Text("Search products...") },
                 leadingIcon = { Icon(Icons.Default.Search, "Search") },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
             // Categories
@@ -105,7 +112,10 @@ fun HomeScreen(navController: NavController) {
 
             // Products Grid
             if (isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator()
                 }
             } else {
@@ -124,27 +134,29 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ProductCard(product: Product, navController: NavController, cartViewModel: CartViewModel) {
-
-    // Define the base URL as a constant or fetch it from a configuration file/object
     val BASE_URL = "https://ezyshop-mvvq.onrender.com"
 
-    // Construct the full URL
-    // This logic ensures there's exactly one slash between the base URL and the image path
-    val fullImageUrl = BASE_URL.trimEnd('/') + "/" + product.image_url.trimStart('/')
+    val imageUrl = when {
+        product.image_url.startsWith("http") -> product.image_url
+        product.image_url.startsWith("/") -> "$BASE_URL${product.image_url}"
+        else -> "$BASE_URL/${product.image_url}"
+    }
 
-    // Optional: Log the final URL to verify it's correct
-    Log.d("ProductCard", "Full Image URL: $fullImageUrl")
+    Log.d("ProductCard", "Image URL: $imageUrl")
 
     Card(
         modifier = Modifier.clickable { navController.navigate("product/${product.product_id}") }
     ) {
         Column {
-            AsyncImage(
-                model = fullImageUrl,
+            GlideImage(
+                model = imageUrl,
                 contentDescription = product.name,
-                modifier = Modifier.fillMaxWidth().height(180.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp),
                 contentScale = ContentScale.Crop
             )
 
@@ -172,7 +184,11 @@ fun ProductCard(product: Product, navController: NavController, cartViewModel: C
                         onClick = { cartViewModel.addToCart(product.product_id) },
                         modifier = Modifier.size(32.dp)
                     ) {
-                        Icon(Icons.Default.AddShoppingCart, "Add to cart", modifier = Modifier.size(20.dp))
+                        Icon(
+                            Icons.Default.AddShoppingCart,
+                            "Add to cart",
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
             }
