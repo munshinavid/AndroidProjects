@@ -38,4 +38,5 @@ object CartManager {
         // total price of all items in cart
         return _cartItems.sumOf { it.price * it.quantity }
     }
+    //this is test
 }
