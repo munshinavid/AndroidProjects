@@ -18,7 +18,7 @@ class LoginActivity : AppCompatActivity() {
         val loginButton = findViewById<Button>(R.id.loginButton)
 
         // Pre-made credentials (for showcase)
-        val correctUsername = "navid"
+        val correctUsername = "shihab"
         val correctPassword = "1234"
 
         loginButton.setOnClickListener {
