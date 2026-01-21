@@ -71,11 +71,12 @@ class RegisterActivity : AppCompatActivity() {
                                 .set(user)
                                 .addOnSuccessListener { 
                                     Toast.makeText(baseContext, "Registration successful.", Toast.LENGTH_SHORT).show()
-                                    // Navigate to the correct dashboard based on role
-                                    // For now, we'll just go back to the main activity
-                                    val intent = Intent(this, MainActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
+                                    when (role) {
+                                        "donor" -> navigateTo(DonorDashboardActivity::class.java)
+                                        "requester" -> navigateTo(RequesterDashboardActivity::class.java)
+                                        "admin" -> navigateTo(AdminDashboardActivity::class.java)
+                                        else -> Toast.makeText(baseContext, "Unknown role.", Toast.LENGTH_SHORT).show()
+                                    }
                                  }
                                 .addOnFailureListener { e ->
                                     Toast.makeText(baseContext, "Error saving user data: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -93,5 +94,11 @@ class RegisterActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun navigateTo(activityClass: Class<*>) {
+        val intent = Intent(this, activityClass)
+        startActivity(intent)
+        finish()
     }
 }

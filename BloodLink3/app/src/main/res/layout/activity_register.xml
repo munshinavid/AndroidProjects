@@ -83,7 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="City"
-            android:inputType="text"
+            android.inputType="text"
             app:layout_constraintTop_toBottomOf="@id/bloodGroup"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -121,6 +121,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="Requester" />
+
+            <RadioButton
+                android:id="@+id/role_admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Admin" />
         </RadioGroup>
 
         <Button

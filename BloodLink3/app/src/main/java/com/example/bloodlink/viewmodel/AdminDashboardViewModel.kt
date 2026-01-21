@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.bloodlink.data.BloodRequest
+import com.example.bloodlink.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 
 class AdminDashboardViewModel : ViewModel() {
@@ -13,8 +14,12 @@ class AdminDashboardViewModel : ViewModel() {
     private val _allRequests = MutableLiveData<List<BloodRequest>>()
     val allRequests: LiveData<List<BloodRequest>> = _allRequests
 
+    private val _allUsers = MutableLiveData<List<User>>()
+    val allUsers: LiveData<List<User>> = _allUsers
+
     init {
         fetchAllRequests()
+        fetchAllUsers()
     }
 
     private fun fetchAllRequests() {
@@ -28,6 +33,21 @@ class AdminDashboardViewModel : ViewModel() {
                 if (snapshots != null) {
                     val requestList = snapshots.toObjects(BloodRequest::class.java)
                     _allRequests.value = requestList
+                }
+            }
+    }
+
+    private fun fetchAllUsers() {
+        db.collection("users")
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    // Handle error
+                    return@addSnapshotListener
+                }
+
+                if (snapshots != null) {
+                    val userList = snapshots.toObjects(User::class.java)
+                    _allUsers.value = userList
                 }
             }
     }
