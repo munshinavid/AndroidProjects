@@ -1,0 +1,54 @@
+package com.example.findblood.ui
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.findblood.databinding.FragmentDonationHistoryBinding
+import com.example.findblood.viewmodel.DonorViewModel
+
+class DonationHistoryFragment : Fragment() {
+
+    private var _binding: FragmentDonationHistoryBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var viewModel: DonorViewModel
+    private lateinit var donationAdapter: DonationAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentDonationHistoryBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProvider(this).get(DonorViewModel::class.java)
+
+        setupRecyclerView()
+
+        viewModel.donationHistory.observe(viewLifecycleOwner) {
+            donationAdapter.updateDonations(it)
+        }
+
+        viewModel.fetchDonationHistory()
+    }
+
+    private fun setupRecyclerView() {
+        donationAdapter = DonationAdapter(emptyList())
+        binding.donationHistoryRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = donationAdapter
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.AdminDashboardFragment">
+
+    <LinearLayout
+        android:id="@+id/analyticsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvTotalDonors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Donors: 0" />
+
+        <TextView
+            android:id="@+id/tvAvailableDonors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Available Donors: 0" />
+
+        <TextView
+            android:id="@+id/tvTotalRequests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Requests: 0" />
+
+        <TextView
+            android:id="@+id/tvEmergencyRequests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Emergency Requests: 0" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnViewRequests"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Requests"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/analyticsLayout" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/usersRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/btnViewRequests"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

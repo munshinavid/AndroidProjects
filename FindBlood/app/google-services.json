@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "8311225144",
+    "project_id": "findblood-790f7",
+    "storage_bucket": "findblood-790f7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8311225144:android:cfc323988f21ca19dc1fcd",
+        "android_client_info": {
+          "package_name": "com.example.findblood"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvE2UMTT8wIziqFFFTsabQXD4IYYHa5z0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
