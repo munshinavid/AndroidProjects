@@ -23,6 +23,7 @@ class RequesterDashboardActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var welcomeMessage: TextView
     private lateinit var logoutButton: Button
+    private lateinit var createRequestButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +32,7 @@ class RequesterDashboardActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        val createRequestButton = findViewById<Button>(R.id.create_request_button)
+        createRequestButton = findViewById(R.id.create_request_button)
         myRequestsRecyclerView = findViewById(R.id.my_requests_recyclerview)
         welcomeMessage = findViewById(R.id.welcome_message)
         logoutButton = findViewById(R.id.logout_button)
@@ -62,6 +63,8 @@ class RequesterDashboardActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.myRequests.observe(this) { requests ->
             adapter.updateRequests(requests)
+            val hasPendingRequest = requests.any { it.status == "pending" }
+            createRequestButton.isEnabled = !hasPendingRequest
         }
     }
 

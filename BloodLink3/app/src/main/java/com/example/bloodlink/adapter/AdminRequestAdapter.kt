@@ -1,5 +1,6 @@
 package com.example.bloodlink.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,13 +35,23 @@ class AdminRequestAdapter(
 
     inner class AdminRequestViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val bloodGroupTextView: TextView = itemView.findViewById(R.id.blood_group)
-        private val statusTextView: TextView = itemView.findViewById(R.id.status)
+        private val locationTextView: TextView = itemView.findViewById(R.id.location)
+        private val requesterNameTextView: TextView = itemView.findViewById(R.id.requester_name)
+        private val urgencyTextView: TextView = itemView.findViewById(R.id.urgency)
         private val approveButton: Button = itemView.findViewById(R.id.approve_button)
         private val rejectButton: Button = itemView.findViewById(R.id.reject_button)
 
         fun bind(request: BloodRequest) {
             bloodGroupTextView.text = request.bloodGroup
-            statusTextView.text = request.status
+            locationTextView.text = "${request.city}, ${request.hospital}"
+            requesterNameTextView.text = request.requesterName
+
+            if (request.isEmergency) {
+                urgencyTextView.text = "EMERGENCY"
+                urgencyTextView.setTextColor(Color.RED)
+            } else {
+                urgencyTextView.text = ""
+            }
 
             approveButton.setOnClickListener { onApproveClicked(request) }
             rejectButton.setOnClickListener { onRejectClicked(request) }

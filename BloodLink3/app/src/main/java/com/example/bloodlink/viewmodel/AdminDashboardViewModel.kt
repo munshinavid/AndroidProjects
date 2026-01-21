@@ -14,6 +14,9 @@ class AdminDashboardViewModel : ViewModel() {
     private val _allRequests = MutableLiveData<List<BloodRequest>>()
     val allRequests: LiveData<List<BloodRequest>> = _allRequests
 
+    private val _pendingRequests = MutableLiveData<List<BloodRequest>>()
+    val pendingRequests: LiveData<List<BloodRequest>> = _pendingRequests
+
     private val _allUsers = MutableLiveData<List<User>>()
     val allUsers: LiveData<List<User>> = _allUsers
 
@@ -33,6 +36,7 @@ class AdminDashboardViewModel : ViewModel() {
                 if (snapshots != null) {
                     val requestList = snapshots.toObjects(BloodRequest::class.java)
                     _allRequests.value = requestList
+                    _pendingRequests.value = requestList.filter { it.status == "pending" }
                 }
             }
     }

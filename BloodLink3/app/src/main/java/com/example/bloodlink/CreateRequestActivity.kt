@@ -1,6 +1,7 @@
 package com.example.bloodlink
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -37,22 +38,34 @@ class CreateRequestActivity : AppCompatActivity() {
 
             if (bloodGroup.isNotEmpty() && city.isNotEmpty() && hospital.isNotEmpty() && contactNumber.isNotEmpty() && urgency.isNotEmpty()) {
                 val userId = auth.currentUser!!.uid
-                val request = BloodRequest(
-                    bloodGroup = bloodGroup,
-                    city = city,
-                    hospital = hospital,
-                    contactNumber = contactNumber,
-                    urgency = urgency,
-                    createdBy = userId
-                )
+                db.collection("users").document(userId).get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            val requesterName = document.getString("name") ?: "Unknown"
+                            val request = BloodRequest(
+                                requesterName = requesterName,
+                                bloodGroup = bloodGroup,
+                                city = city,
+                                hospital = hospital,
+                                contactNumber = contactNumber,
+                                urgency = urgency,
+                                createdBy = userId
+                            )
 
-                db.collection("requests").add(request)
-                    .addOnSuccessListener {
-                        Toast.makeText(baseContext, "Request submitted successfully.", Toast.LENGTH_SHORT).show()
-                        finish()
+                            db.collection("requests").add(request)
+                                .addOnSuccessListener {
+                                    Toast.makeText(baseContext, "Request submitted successfully.", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(baseContext, "Error submitting request: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        } else {
+                            Log.d("CreateRequestActivity", "No such document")
+                        }
                     }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(baseContext, "Error submitting request: ${e.message}", Toast.LENGTH_SHORT).show()
+                    .addOnFailureListener { exception ->
+                        Log.d("CreateRequestActivity", "get failed with ", exception)
                     }
             } else {
                 Toast.makeText(baseContext, "Please fill all fields.", Toast.LENGTH_SHORT).show()

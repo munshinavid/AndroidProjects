@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bloodlink.adapter.AdminRequestAdapter
-import com.example.bloodlink.adapter.UserAdapter
+import com.example.bloodlink.data.BloodRequest
 import com.example.bloodlink.viewmodel.AdminDashboardViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,14 +18,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 class AdminDashboardActivity : AppCompatActivity() {
 
     private val viewModel: AdminDashboardViewModel by viewModels()
-    private lateinit var allRequestsRecyclerView: RecyclerView
-    private lateinit var allUsersRecyclerView: RecyclerView
+    private lateinit var pendingRequestsRecyclerView: RecyclerView
     private lateinit var requestAdapter: AdminRequestAdapter
-    private lateinit var userAdapter: UserAdapter
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var welcomeMessage: TextView
     private lateinit var logoutButton: Button
+    private lateinit var totalUsersCount: TextView
+    private lateinit var totalRequestsCount: TextView
+    private lateinit var pendingRequestsCount: TextView
+    private lateinit var emergencyRequestsCount: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,14 +36,17 @@ class AdminDashboardActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        allRequestsRecyclerView = findViewById(R.id.all_requests_recyclerview)
-        allUsersRecyclerView = findViewById(R.id.all_users_recyclerview)
+        pendingRequestsRecyclerView = findViewById(R.id.pending_requests_recyclerview)
         welcomeMessage = findViewById(R.id.welcome_message)
         logoutButton = findViewById(R.id.logout_button)
+        totalUsersCount = findViewById(R.id.total_users_count)
+        totalRequestsCount = findViewById(R.id.total_requests_count)
+        pendingRequestsCount = findViewById(R.id.pending_requests_count)
+        emergencyRequestsCount = findViewById(R.id.emergency_requests_count)
 
-        setupRecyclerViews()
+        setupRecyclerView()
         observeViewModel()
-        fetchAdminData()
+        fetchDashboardData()
 
         logoutButton.setOnClickListener {
             auth.signOut()
@@ -51,29 +56,33 @@ class AdminDashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupRecyclerViews() {
+    private fun setupRecyclerView() {
         requestAdapter = AdminRequestAdapter(emptyList(),
             { request -> viewModel.approveRequest(request) },
             { request -> viewModel.rejectRequest(request) }
         )
-        allRequestsRecyclerView.adapter = requestAdapter
-        allRequestsRecyclerView.layoutManager = LinearLayoutManager(this)
-
-        userAdapter = UserAdapter(emptyList())
-        allUsersRecyclerView.adapter = userAdapter
-        allUsersRecyclerView.layoutManager = LinearLayoutManager(this)
+        pendingRequestsRecyclerView.adapter = requestAdapter
+        pendingRequestsRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
     private fun observeViewModel() {
-        viewModel.allRequests.observe(this) { requests ->
+        viewModel.pendingRequests.observe(this) { requests ->
             requestAdapter.updateRequests(requests)
+            pendingRequestsCount.text = requests.size.toString()
         }
+
         viewModel.allUsers.observe(this) { users ->
-            userAdapter.updateUsers(users)
+            totalUsersCount.text = users.size.toString()
+        }
+
+        viewModel.allRequests.observe(this) { requests ->
+            totalRequestsCount.text = requests.size.toString()
+            val emergencyCount = requests.count { it.isEmergency }
+            emergencyRequestsCount.text = emergencyCount.toString()
         }
     }
 
-    private fun fetchAdminData() {
+    private fun fetchDashboardData() {
         val userId = auth.currentUser!!.uid
         db.collection("users").document(userId).get()
             .addOnSuccessListener { document ->
